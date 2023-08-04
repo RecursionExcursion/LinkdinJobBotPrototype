@@ -10,9 +10,14 @@ namespace WinFormsApp1.Selenium
 
         private readonly Actions actions;
 
-        public ActionsDelegate(IWebDriver driver)
+        private ActionsDelegate(IWebDriver driver)
         {
             this.actions = new Actions(driver);
+        }
+
+        public static ActionsDelegate BuildActionChain(IWebDriver driver)
+        {
+            return new ActionsDelegate(driver);
         }
 
         public ActionsDelegate SendKeys(String s)
@@ -39,15 +44,10 @@ namespace WinFormsApp1.Selenium
             return this;
         }
 
-        public ActionsDelegate SendKeysAndPressEnter(String s)
-        {
-            SendKeys(s).PressEnter();
-            return this;
-        }
-
         public ActionsDelegate PressEnter()
         {
-            actions.SendKeys("\n");
+            //actions.SendKeys("\n");
+            actions.SendKeys(Keys.Enter);
             actions.Pause(GetMediumPauseInt());
             return this;
         }

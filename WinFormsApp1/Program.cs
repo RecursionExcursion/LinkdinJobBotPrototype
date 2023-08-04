@@ -14,7 +14,6 @@ namespace WinFormsApp1
 
             Application.ApplicationExit += ApplicationApplicationExit;
 
-
             Application.Run(new MainForm());
         }
 

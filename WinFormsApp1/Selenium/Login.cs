@@ -1,5 +1,9 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System.Linq;
+using System;
+using System.Diagnostics;
+using WinFormsApp1.Forms;
 
 namespace WinFormsApp1.Selenium
 {
@@ -8,8 +12,8 @@ namespace WinFormsApp1.Selenium
 
         private IWebDriver driver;
 
-        private String username;
-        private String password;
+        private readonly String username;
+        private readonly String password;
 
         private Login(IWebDriver driver, string username, string password)
         {
@@ -28,10 +32,12 @@ namespace WinFormsApp1.Selenium
 
             //TODO Sometimes fails to write in the email text box, create fall back
 
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
-            IWebElement usernameTextBox = wait.Until(condition =>
-            driver.FindElement(By.Id("session_key")));
+
             /*
+            
+            //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
+            //IWebElement usernameTextBox = wait.Until(condition =>
+            //driver.FindElement(By.Id("session_key")));
             IWebElement usernameTextBox;
             try
             {
@@ -56,21 +62,51 @@ namespace WinFormsApp1.Selenium
                 Console.WriteLine(ex.Message);
                 throw;
             }
+            
+
+            //IWebElement passwordTextBox = driver.FindElement(By.Id("session_password"));
+
+
+            //string submitButtonXpath = "//button[@data-tracking-control-name='homepage-basic_sign-in-submit-btn']";
+            //IWebElement submitButton = driver.FindElement(By.XPath(submitButtonXpath));
             */
 
-            IWebElement passwordTextBox = driver.FindElement(By.Id("session_password"));
+
+            SmartElementLocator elementLocator = new SmartElementLocator(driver);
+            IWebElement usernameTextBox = elementLocator.FindElement(By.Id("session_key"));
+
+
+            IWebElement passwordTextBox = elementLocator.FindElement(By.Id("session_password"));
+
             string submitButtonXpath = "//button[@data-tracking-control-name='homepage-basic_sign-in-submit-btn']";
-            IWebElement submitButton = driver.FindElement(By.XPath(submitButtonXpath));
+            IWebElement submitButton = elementLocator.FindElement(By.XPath(submitButtonXpath));
 
+            ActionsDelegate.BuildActionChain(driver)
+                           .MoveToAndClick(usernameTextBox)
+                           .SendKeys(username)
+                           .MoveToAndClick(passwordTextBox)
+                           .SendKeys(password)
+                           .MoveToAndClick(submitButton)
+                           .Perform();
 
-            ActionsDelegate actions = new ActionsDelegate(driver);
+            CheckForSecurityCheck();
+        }
 
-            actions.MoveToAndClick(usernameTextBox)
-                .SendKeys(username)
-                .MoveToAndClick(passwordTextBox)
-                .SendKeys(password)
-                .MoveToAndClick(submitButton)
-                .Perform();
+        private void CheckForSecurityCheck()
+        {
+            SmartElementLocator elementLocator = new SmartElementLocator(driver);
+            List<IWebElement> elements = elementLocator.FindElements(By.XPath("//h1"));
+            if (elements.Count != 0)
+            {
+                String text = elements[0].Text;
+
+                bool isPresent = text.Contains("security check");
+                if (isPresent)
+                {
+                    CaptchaByPassForm popUp = new();
+                    popUp.ShowDialog();
+                }
+            }
         }
     }
 }

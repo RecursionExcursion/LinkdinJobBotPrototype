@@ -3,6 +3,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,14 +16,16 @@ namespace WinFormsApp1.Selenium
         private readonly ActionsDelegate actions;
         private readonly string jobDescription;
         private readonly string jobLocation;
+        private readonly SmartElementLocator elementLocator;
 
 
-        public SearchForJobs(IWebDriver driver, string jobDescription, string jobLocation)
+        private SearchForJobs(IWebDriver driver, string jobDescription, string jobLocation)
         {
             this.driver = driver;
             this.jobDescription = jobDescription;
             this.jobLocation = jobLocation;
-            actions = new ActionsDelegate(driver);
+            actions = ActionsDelegate.BuildActionChain(driver);
+            elementLocator = new SmartElementLocator(driver);
         }
 
         public static void ExecuteSearch(IWebDriver driver, string jobDescription, string jobLocation)
@@ -32,59 +35,52 @@ namespace WinFormsApp1.Selenium
 
         private void Search()
         {
-            //throw new NotImplementedException();
-
-            //driver.Navigate().Refresh();
-            //ClickJobsButton();
-
             Size originalSize = driver.Manage().Window.Size;
-
             driver.Manage().Window.Maximize();
 
-            //TODO rework press this first -> press jobs button -> continue
+            ClickJobsButton();
 
             EnterJobDescriptionInSearchbar(jobDescription);
-            //EnterJobLocationInSearchbar(jobLocation);
-            //ClickEasyApplyButton();
-            //SetUpExperienceFilters();
-            //SetUpLocationFilters();
+            EnterJobLocationInSearchbar(jobLocation);
+            actions.PressEnter().Perform();
 
-            //driver.Manage().Window.Size = originalSize;
+            SetUpExperienceFilters();
+            SetUpLocationFilters();
+            ClickEasyApplyButton();
 
+            driver.Manage().Window.Size = originalSize;
         }
 
         private void EnterJobDescriptionInSearchbar(string jobDescription)
         {
             if (!string.IsNullOrEmpty(jobDescription))
             {
-
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-
-                string jobTitleBarXpath = "//input[@aria-label=\"Search\"]";
-
-                IWebElement webElement = wait.Until(condition => driver.FindElement(By.XPath(jobTitleBarXpath)));
-                    
-                   
-                //string jobTitleBarXpath = "//input[starts-with(@id,'jobs-search-box-keyword-id-ember')]";
+                string jobTitleBarXpath = "//input[starts-with(@id,'jobs-search-box-keyword-id-ember')]";
+                IWebElement webElement = elementLocator.FindElement(By.XPath(jobTitleBarXpath));
                 SendKeysToSearchBar(webElement, jobDescription);
             };
         }
 
         private void EnterJobLocationInSearchbar(string jobLocation)
         {
-            if (!string.IsNullOrEmpty(jobLocation))
+
+            if (String.IsNullOrEmpty(jobLocation))
             {
-                string locationBarXpath = "//input[starts-with(@id,'jobs-search-box-location-id-ember')]";
-                IWebElement webElement = driver.FindElement(By.XPath(locationBarXpath));
-                SendKeysToSearchBar(webElement, jobLocation);
+                jobLocation = "";
             }
+
+            string locationBarXpath =
+                "//input[starts-with(@id,'jobs-search-box-location-id-ember')]";
+            IWebElement webElement = elementLocator.FindElement(By.XPath(locationBarXpath));
+            SendKeysToSearchBar(webElement, jobLocation);
+
         }
 
 
         private void SendKeysToSearchBar(IWebElement element, string searchText)
         {
             actions.MoveToAndClick(element)
-                   .SendKeysAndPressEnter(searchText)
+                   .SendKeys(searchText)
                    .Perform();
         }
 
@@ -99,50 +95,48 @@ namespace WinFormsApp1.Selenium
 
         private void ClickButton(string buttonXpath)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
-            IWebElement element = driver.FindElement(By.XPath(buttonXpath));
+            IWebElement element = elementLocator.FindElement(By.XPath(buttonXpath));
             actions.MoveToAndClick(element).Perform();
         }
 
 
         private void SetUpExperienceFilters()
         {
+
+            IWebElement experienceDiv = elementLocator.FindElement(By.XPath("//div[@id=\"hoverable-outlet-experience-level-filter-value\"]"));
+
             string experienceParametersButtonXpath = "//button[contains(@aria-label,\"Experience level filter.\")]";
-            SetSearchParams(experienceParametersButtonXpath,
-                            new List<string>
-                            {
-                                experianceIDMap["Internship"],
-                                experianceIDMap["Entry Level"]
-                            });
+
+            List<string> ids = new List<string> { experianceIDMap["Internship"], experianceIDMap["Entry Level"] };
+
+            SetSearchParams(experienceParametersButtonXpath, experienceDiv, ids);
         }
 
         private void SetUpLocationFilters()
         {
+
+            IWebElement locationDiv = elementLocator.FindElementAfter(By.XPath("//div[@id=\"hoverable-outlet-on-site/remote-filter-value\"]"), 5);
+
             string locationParametersButtonXpath = "//button[contains(@aria-label,\"On-site/remote filter.\")]";
-            SetSearchParams(locationParametersButtonXpath,
-                new List<string>
-                {
-                    locationIDMap["Remote"]
-                });
+
+            List<String> ids = new List<string> { locationIDMap["Remote"] };
+
+            SetSearchParams(locationParametersButtonXpath, locationDiv, ids);
         }
 
-        private void SetSearchParams(string buttonXpath, List<string> locationIDMap)
+        //TODO not working
+        private void SetSearchParams(string buttonXpath, IWebElement parent, List<string> idList)
         {
+            //Presses main button
+            IWebElement parameterButton = elementLocator.FindElement(By.XPath(buttonXpath));
 
-            IWebElement parameterButton = driver.FindElement(By.XPath(buttonXpath));
             actions.MoveToAndClick(parameterButton).Perform();
 
-            List<string> xPaths = new List<string>();
-            foreach (string xp in locationIDMap)
-            {
-                xPaths.Add($"//input[@id='{xp}']");
-            }
-            List<IWebElement> elements = new List<IWebElement>();
-            foreach (string xpXpath in xPaths)
-            {
+            //Selects from drop down
+            List<IWebElement> inputs = elementLocator.FindElements(parent, By.XPath(".//input"));
 
-                elements.Add(driver.FindElement(By.XPath(xpXpath)));
-            }
+            IEnumerable<IWebElement> elements = inputs.Where(inp => idList.Contains(inp.GetAttribute("id")));
+
             foreach (IWebElement element in elements)
             {
                 actions.MoveToAndClick(element);
@@ -150,7 +144,48 @@ namespace WinFormsApp1.Selenium
             actions.Perform();
 
             //Click filter button again to remove overlay
+            parameterButton = elementLocator.FindElement(By.XPath(buttonXpath));
+
+
             actions.MoveToAndClick(parameterButton).Perform();
+
+
+
+
+            //List < By > bys = new List<By>();
+
+            //List<string> xPaths = new List<string>();
+
+            //foreach (string id in idList)
+            //{
+            //    xPaths.Add($"//input[@id='{id}']");
+            //    bys.Add(By.Id(id));
+            //}
+
+
+            //List<IWebElement> elements = new List<IWebElement>();
+
+
+            //foreach (string xpXpath in xPaths)
+            //{
+            //    elements.Add(elementLocator.FindElement(By.XPath(xpXpath)));
+            //}
+
+
+            ////foreach (By by in bys)
+            ////{
+            ////    elements.Add(elementLocator.FindElement(by));
+            ////}
+
+
+            //foreach (IWebElement element in elements)
+            //{
+            //    actions.MoveToAndClick(element);
+            //}
+            //actions.Perform();
+
+            ////Click filter button again to remove overlay
+            //actions.MoveToAndClick(parameterButton).Perform();
         }
 
 
@@ -160,11 +195,11 @@ namespace WinFormsApp1.Selenium
 
         private static Dictionary<string, string> getLocationIDMap()
         {
-            Dictionary<string, string> onSiteRemoteIdMap = new Dictionary<string, string>();
-            onSiteRemoteIdMap.Add("OnSite", "workplaceType-1");
-            onSiteRemoteIdMap.Add("Remote", "workplaceType-2");
-            onSiteRemoteIdMap.Add("Hybrid", "workplaceType-3");
-            return onSiteRemoteIdMap;
+            Dictionary<string, string> locationIdMap = new Dictionary<string, string>();
+            locationIdMap.Add("OnSite", "workplaceType-1");
+            locationIdMap.Add("Remote", "workplaceType-2");
+            locationIdMap.Add("Hybrid", "workplaceType-3");
+            return locationIdMap;
         }
 
         private static Dictionary<string, string> getExperienceIDMap()

@@ -56,19 +56,24 @@ namespace WinFormsApp1.Selenium
                 String validation = "session_key";
                 try
                 {
-                    WebDriverWait wait = new WebDriverWait(driver,
-                        TimeSpan.FromMilliseconds(Get3to5SecondWait()));
+                    /*
+                    //WebDriverWait wait = new WebDriverWait(driver,
+                    //    TimeSpan.FromMilliseconds(Get3to5SecondWait()));
 
-                    wait.Until(drvr => drvr.FindElement(By.Id(validation)));
-                    pageIsLoaded = true;
+                    //wait.Until(drvr => ));
+                    */
+                    //SmartElementLocator elementLocator = new SmartElementLocator(driver);
+                    IWebElement webElement = driver.FindElement(By.Id(validation));
+                    if (webElement.Displayed)
+                    {
+                        pageIsLoaded = true;
+                    }
                 }
                 catch (Exception)
                 {
                     if (++refreshAttempt >= 3)
                     {
-                        Console.WriteLine(
-                            $"Driver- {driver} could not find ID-{validation} in DOM"
-                            );
+                        Console.WriteLine($"Driver- {driver} could not find ID-{validation} in DOM");
                         driver.Close();
                         return false;
                     }
@@ -77,11 +82,5 @@ namespace WinFormsApp1.Selenium
             }
             return true;
         }
-
-        private static int Get3to5SecondWait()
-        {
-            return new Random().Next(3000) + 2000;
-        }
-
     }
 }
