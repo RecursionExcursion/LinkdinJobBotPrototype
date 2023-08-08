@@ -2,26 +2,21 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.Support.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using static WinFormsApp1.Selenium.ByConstants;
+using static WinFormsApp1.Selenium.ByConstants.DriverFactoryByKeys;
 
-namespace WinFormsApp1.Selenium
+namespace WinFormsApp1.Selenium.Phases
 {
     public class DriverFactory
     {
 
-        public static IWebDriver GetDriver(String url)
+        public static IWebDriver GetDriver(string url)
         {
             IWebDriver driver;
             int attemptLimit = 3;
             do
             {
-                driver = getRandomWebDriver();
+                driver = GetRandomWebDriver();
                 driver.Navigate().GoToUrl(url);
             } while (!CheckIfPageLoadSuccessFull(driver) && --attemptLimit > 0);
 
@@ -29,7 +24,7 @@ namespace WinFormsApp1.Selenium
             return driver;
         }
 
-        private static IWebDriver getRandomWebDriver()
+        private static IWebDriver GetRandomWebDriver()
         {
             static IWebDriver createChromeDriver() => new ChromeDriver();
             static IWebDriver createFirefoxDriver() => new FirefoxDriver();
@@ -53,17 +48,10 @@ namespace WinFormsApp1.Selenium
 
             while (!pageIsLoaded)
             {
-                String validation = "session_key";
+                By validationBy = DriverFactoryBy[Validation];
                 try
                 {
-                    /*
-                    //WebDriverWait wait = new WebDriverWait(driver,
-                    //    TimeSpan.FromMilliseconds(Get3to5SecondWait()));
-
-                    //wait.Until(drvr => ));
-                    */
-                    //SmartElementLocator elementLocator = new SmartElementLocator(driver);
-                    IWebElement webElement = driver.FindElement(By.Id(validation));
+                    IWebElement webElement = driver.FindElement(validationBy);
                     if (webElement.Displayed)
                     {
                         pageIsLoaded = true;
@@ -73,7 +61,7 @@ namespace WinFormsApp1.Selenium
                 {
                     if (++refreshAttempt >= 3)
                     {
-                        Console.WriteLine($"Driver- {driver} could not find ID-{validation} in DOM");
+                        Console.WriteLine($"Driver- {driver} could not find ID-{validationBy.ToString} in DOM");
                         driver.Close();
                         return false;
                     }

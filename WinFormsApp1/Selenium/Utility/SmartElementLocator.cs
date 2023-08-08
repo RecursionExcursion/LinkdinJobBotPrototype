@@ -1,10 +1,11 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
-namespace WinFormsApp1.Selenium
+namespace WinFormsApp1.Selenium.Utility
 {
     public class SmartElementLocator
     {
@@ -89,7 +90,8 @@ namespace WinFormsApp1.Selenium
             {
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(wait);
                 element = driver.FindElement(by);
-            } finally
+            }
+            finally
             {
                 driver.Manage().Timeouts().ImplicitWait = originalWait;
             }
@@ -97,7 +99,7 @@ namespace WinFormsApp1.Selenium
         }
 
 
-        //Waits for set interval while polling for reasource as specfied intervals
+        //Waits for set interval while polling for resource as specified intervals
         public IWebElement FindElementFluently(By by, double waitSeconds, double pollIntervalMs)
         {
             DefaultWait<IWebDriver> fluentWait = new DefaultWait<IWebDriver>(driver);
@@ -107,5 +109,7 @@ namespace WinFormsApp1.Selenium
         }
 
         public IWebElement FindElementFluently(By by) => FindElementFluently(by, 10, 500);
+
+        public bool ElementExists(IWebElement questionDiv, By by) => FindElements(questionDiv, by).Count > 0;
     }
 }

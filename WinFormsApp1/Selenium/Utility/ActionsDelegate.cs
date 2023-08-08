@@ -2,25 +2,18 @@
 using OpenQA.Selenium.Interactions;
 using Keys = OpenQA.Selenium.Keys;
 
-namespace WinFormsApp1.Selenium
+namespace WinFormsApp1.Selenium.Utility
 {
     public class ActionsDelegate
     {
-
-
         private readonly Actions actions;
 
-        private ActionsDelegate(IWebDriver driver)
+        public ActionsDelegate(IWebDriver driver)
         {
-            this.actions = new Actions(driver);
+            actions = new Actions(driver);
         }
 
-        public static ActionsDelegate BuildActionChain(IWebDriver driver)
-        {
-            return new ActionsDelegate(driver);
-        }
-
-        public ActionsDelegate SendKeys(String s)
+        public ActionsDelegate SendKeys(string s)
         {
             foreach (char c in s.ToCharArray())
             {
