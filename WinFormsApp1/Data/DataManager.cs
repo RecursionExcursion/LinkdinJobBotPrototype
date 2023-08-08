@@ -12,7 +12,7 @@ namespace WinFormsApp1.Data
 
 		private static readonly Lazy<DataManager> lazyInstance = new Lazy<DataManager>(() => new DataManager());
 
-		private static DataManager Instance => lazyInstance.Value;
+		public static DataManager Instance => lazyInstance.Value;
 
 		private DataManager()
 		{

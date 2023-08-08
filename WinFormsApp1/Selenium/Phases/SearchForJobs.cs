@@ -47,6 +47,7 @@ namespace WinFormsApp1.Selenium.Phases
 
             SetUpExperienceFilters();
             SetUpLocationFilters();
+
             //Click 'Easy Apply' button
             ClickButton(by[EasyApplyButton]);
 

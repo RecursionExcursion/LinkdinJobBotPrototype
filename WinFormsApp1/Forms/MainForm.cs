@@ -1,3 +1,4 @@
+using WinFormsApp1.Models;
 using WinFormsApp1.Selenium;
 
 namespace WinFormsApp1
@@ -12,7 +13,11 @@ namespace WinFormsApp1
 
         private void MainLabelClick(object sender, EventArgs e)
         {
-            new SeleniumBot().Run();
+
+			UserProfile user = new UserProfile("ryan", "rloup7@gmail.com", "walruss7");
+
+
+			new SeleniumBot(user).Run();
         }
     }
 }

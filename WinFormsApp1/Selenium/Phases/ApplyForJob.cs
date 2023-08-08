@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using WinFormsApp1.Models;
 using WinFormsApp1.Selenium.Constants;
 using static WinFormsApp1.Selenium.Constants.ApplyByConstants;
 using static WinFormsApp1.Selenium.Constants.ApplyByConstants.ByKeys;
@@ -9,11 +10,14 @@ namespace WinFormsApp1.Selenium.Phases
 	public class ApplyForJob : BotPhase<ByKeys>
 	{
 
-		private int applyMax;
+		private readonly QuestionDelegate questionDelegate;
+		private readonly int applyMax;
 
 		public ApplyForJob(IWebDriver driver, ApplyByConstants constants, params object[] parameters) : base(driver, constants, parameters)
 		{
-			applyMax = (int) parameters[0];
+			UserProfile user = (UserProfile) parameters[0];
+			questionDelegate = new QuestionDelegate(user);
+			applyMax = (int) parameters[1];
 		}
 
 
@@ -33,7 +37,7 @@ namespace WinFormsApp1.Selenium.Phases
 				{
 					FindAndClickEasyApplyButton();
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					continue;
 				}
@@ -118,78 +122,79 @@ namespace WinFormsApp1.Selenium.Phases
 			SelectElement select = new SelectElement(selectTag);
 
 
-			//bool questionAnswered = false;
-			//while (!questionAnswered)
-			//{
-			//	try
-			//	{
-			//		q_a.addDataIfDoesNotExist(question);
-			//		select.SelectByValue(q_a.getAnswer(question));
-			//		questionAnswered = true;
-			//	}
-			//	catch (Exception e)
-			//	{
-			//		q_a.handleIncorrectInput(question);
-			//	}
+			bool questionAnswered = false;
+			while (!questionAnswered)
+			{
+				try
+				{
+					questionDelegate.AddDataIfDoesNotExist(question);
+					select.SelectByValue(questionDelegate.GetAnswer(question));
+					questionAnswered = true;
+				}
+				catch (Exception)
+				{
+					questionDelegate.HandleIncorrectInput(question);
+				}
+			}
 		}
 
 		private void AnswerRadioQuestion(IWebElement div)
 		{
 			////TODO Handle when input does not match output
 
-			//List<WebElement> inputTags = retriever.findElementsInElementBy(parentDiv, By.xpath(".//input"));
-			//WebElement span = retriever.findInElementBy(parentDiv, By.xpath(".//span[@aria-hidden=\"true\"]"));
+			List<IWebElement> inputTags = elementLocator.FindElements(div, By.XPath(".//input"));
+			IWebElement span = elementLocator.FindElement(div, By.XPath(".//span[@aria-hidden=\"true\"]"));
 
-			//String question = span.getText();
+			String question = span.Text;
 
-			//boolean questionAnswered = false;
-			//while (!questionAnswered)
-			//{
-			//	try
-			//	{
-			//		q_a.addDataIfDoesNotExist(question);
-			//		for (WebElement input : inputTags)
-			//		{
-			//			String val = input.getAttribute("value");
-			//			if (val.equalsIgnoreCase(q_a.getAnswer(question)))
-			//			{
-			//				actionsWrapper.moveToAndClick(input).perform();
-			//				questionAnswered = true;
-			//				break;
-			//			}
-			//		}
-			//	}
-			//	catch (Exception e)
-			//	{
-			//		q_a.handleIncorrectInput(question);
-			//	}
-			//}
+			bool questionAnswered = false;
+			while (!questionAnswered)
+			{
+				try
+				{
+					questionDelegate.AddDataIfDoesNotExist(question);
+					foreach (IWebElement input in inputTags)
+					{
+						string val = input.GetAttribute("value");
+						if (string.Equals(val, question, StringComparison.OrdinalIgnoreCase))
+						{
+							actions.MoveToAndClick(input).Perform();
+							questionAnswered = true;
+							break;
+						}
+					}
+				}
+				catch (Exception)
+				{
+					questionDelegate.HandleIncorrectInput(question);
+				}
+			}
 		}
 
 		private void AnswerInputQuestion(IWebElement div)
 		{
 			string question = GetQuestion(div);
 
-			//q_a.addDataIfDoesNotExist(question);
+			questionDelegate.AddDataIfDoesNotExist(question);
 
 			IWebElement inputTag = elementLocator.FindElement(div, by[Input]);
 
 			string value = inputTag.GetAttribute("value");
-			//string answer = q_a.getAnswer(question);
+			string answer = questionDelegate.GetAnswer(question);
 
-			//if (String.IsNullOrEmpty(value))
-			//{
-			//	actions.MoveToAndClick(inputTag)
-			//				  .SendKeys(answer)
-			//				  .Perform();
-			//}
-			//else if (string.Equals(value, answer, StringComparison.OrdinalIgnoreCase))
-			//{
-			//	actions.MoveToAndClick(inputTag)
-			//				  .ClearKeys()
-			//				  .SendKeys(answer)
-			//				  .Perform();
-			//}
+			if (String.IsNullOrEmpty(value))
+			{
+				actions.MoveToAndClick(inputTag)
+							  .SendKeys(answer)
+							  .Perform();
+			}
+			else if (string.Equals(value, answer, StringComparison.OrdinalIgnoreCase))
+			{
+				actions.MoveToAndClick(inputTag)
+							  .ClearKeys()
+							  .SendKeys(answer)
+							  .Perform();
+			}
 		}
 
 		private string GetQuestion(IWebElement parentDiv)
@@ -205,33 +210,33 @@ namespace WinFormsApp1.Selenium.Phases
 
 			string question = "Resume";
 
-			//q_a.addDataIfDoesNotExist(question);
+			questionDelegate.AddDataIfDoesNotExist(question);
 
-			//string resumeName = q_a.getAnswer(question);
+			string resumeName = questionDelegate.GetAnswer(question);
 
-			//IWebElement resumeH3 = null;
+			IWebElement resumeH3 = null;
 
-			//foreach (IWebElement h3Tag in h3Tags)
-			//{
-			//	if (string.Equals(h3Tag.Text, resumeName, StringComparison.OrdinalIgnoreCase))
-			//	{
-			//		resumeH3 = h3Tag;
-			//	}
-			//}
+			foreach (IWebElement h3Tag in h3Tags)
+			{
+				if (string.Equals(h3Tag.Text, resumeName, StringComparison.OrdinalIgnoreCase))
+				{
+					resumeH3 = h3Tag;
+				}
+			}
 
-			//if (resumeH3 != null)
-			//{
-			//	//Xpath retrieves parent's parent element h3->p->div
-			//	IWebElement resumeDiv = elementLocator.FindElement(resumeH3, By.XPath("./../.."));
-			//	if (!resumeDiv.getAttribute("aria-label").equalsIgnoreCase("Selected"))
-			//	{
-			//		actions.MoveToAndClick(resumeDiv).Perform();
-			//	}
-			//}
-			//else
-			//{
-			//	throw new NotFoundException("Could not find h3 for resume");
-			//}
+			if (resumeH3 != null)
+			{
+				//Xpath retrieves parent's parent element h3->p->div
+				IWebElement resumeDiv = elementLocator.FindElement(resumeH3, By.XPath("./../.."));
+				if (string.Equals(resumeDiv.GetAttribute("aria-label"), "Selected", StringComparison.OrdinalIgnoreCase))
+				{
+					actions.MoveToAndClick(resumeDiv).Perform();
+				}
+			}
+			else
+			{
+				throw new NotFoundException("Could not find h3 for resume");
+			}
 		}
 
 		private IWebElement? GetContinueButton(IWebElement formDiv)

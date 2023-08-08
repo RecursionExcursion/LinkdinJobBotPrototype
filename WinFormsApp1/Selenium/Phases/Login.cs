@@ -3,6 +3,7 @@ using WinFormsApp1.Forms;
 using WinFormsApp1.Selenium.Constants;
 using static WinFormsApp1.Selenium.Constants.LoginByConstants.ByKeys;
 using static WinFormsApp1.Selenium.Constants.LoginByConstants;
+using WinFormsApp1.Models;
 
 namespace WinFormsApp1.Selenium.Phases
 {
@@ -13,8 +14,9 @@ namespace WinFormsApp1.Selenium.Phases
 
 		public Login(IWebDriver driver, LoginByConstants constants, params object[] parameters) : base(driver, constants, parameters)
 		{
-			username = (string) parameters[0];
-			password = (string) parameters[1];
+			UserProfile user = (UserProfile) parameters[0];
+			username = user.Email;
+			password = user.Password;
 		}
 
 		public override void Run()
