@@ -30,7 +30,11 @@ namespace WinFormsApp1.Forms
 			FormInitalizer.Initalize(this);
 
 			this.user = user;
+
+			InitializeListBoxes();
 		}
+
+		/* Event Handlers */
 
 		private void OnLoad(object sender, EventArgs e)
 		{
@@ -50,51 +54,39 @@ namespace WinFormsApp1.Forms
 
 			if (!string.IsNullOrEmpty(jobSearch))
 			{
-
-
-				CheckedItemCollection checkedLocations = locationListBox.CheckedItems;
-
-				CheckedItemCollection checkedPostitions = positionListBox.CheckedItems;
-
 				string locationSearch = locationSearchTextBox.Text;
 
-
+				List<string> locationList = CheckedItemToID(locationListBox.CheckedItems, SearchQuery.locationIDMap);
+				List<string> experianceList = CheckedItemToID(experianceListBox.CheckedItems, SearchQuery.experianceIDMap);
 
 				SearchQuery searchQuery = new SearchQuery()
 				{
 					JobSearch = jobSearch,
-					LocationSearch = locationSearch
+					LocationSearch = locationSearch,
+					LocationChoiceID = locationList,
+					ExperianceChoiceID = experianceList
 				};
 
-
-
+				new SeleniumBot(user, searchQuery).Run();
 			}
 		}
 
+		/* Helper */
 
-		//TODO 
-		private List<string> CheckedItemToID(CheckedItemCollection checkedItems, Dictionary<string, string> idmap)
-																		=> checkedItems.Cast<string>().Select(i => idmap[i]).ToList();
-
-
-
-
-
-		private static readonly Dictionary<string, string> locationIDMap = new()
+		private void InitializeListBoxes()
+		{
+			void fillListBoxWithIds(CheckedListBox listBox, Dictionary<string, string> idmap)
 			{
-				{ "OnSite", "workplaceType-1" },
-				{ "Remote", "workplaceType-2" },
-				{ "Hybrid", "workplaceType-3" }
-			};
+				listBox.Items.Clear();
+				idmap.Keys.ToList().ForEach(k => listBox.Items.Add(k));
+			}
+			fillListBoxWithIds(locationListBox, SearchQuery.locationIDMap);
+			fillListBoxWithIds(experianceListBox, SearchQuery.experianceIDMap);
+		}
 
-		private static readonly Dictionary<string, string> experianceIDMap = new()
-			{
-				{ "Internship", "experience-1" },
-				{ "Entry Level", "experience-2" },
-				{ "Associate", "experience-3" },
-				{ "Mid-Senior Level", "experience-4" },
-				{ "Director", "experience-5" },
-				{ "Executive", "experience-6" }
-			};
+		private static List<string> CheckedItemToID(CheckedItemCollection checkedItems, Dictionary<string, string> idmap)
+		{
+			return checkedItems.Cast<string>().Select(i => idmap[i]).ToList();
+		}
 	}
 }

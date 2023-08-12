@@ -9,20 +9,23 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinFormsApp1.Forms.Utility;
 using WinFormsApp1.Models;
+using WinFormsApp1.Selenium;
 
 namespace WinFormsApp1.Forms
 {
 	public partial class UserForm : Form
 	{
 
-		public UserProfile NewUser { get; private set; }
+		public UserProfile? NewUser { get; private set; }
 
-		private UserProfile existingUser;
+		private UserProfile? existingUser;
 
 		public UserForm()
 		{
 			InitializeComponent();
 			FormInitalizer.Initalize(this);
+			deleteButton.Visible = false;
+			deleteButton.Enabled = false;
 		}
 
 		public UserForm(UserProfile user)
@@ -41,24 +44,16 @@ namespace WinFormsApp1.Forms
 
 		private void SubmitButton_Click(object sender, EventArgs e)
 		{
-			Func<String[], Boolean> DoStringsHaveValues = (strings) => {
 
-				foreach (var s in strings)
-				{
-					if (string.IsNullOrEmpty(s))
-					{
-						return false;
-					}
-				}
-				return true;
-			};
 
-			string[] textBoxStrings = new string[]
-			{
-				usernameTextbox.Text, emailTextBox.Text, passwordTextBox.Text
-			};
+			bool textBoxhasNullValue = this.Controls
+										.Cast<Control>()
+										.Where(c => c is TextBox)
+										.Select(tb => tb.Text)
+										.Where(t => string.IsNullOrEmpty(t))
+										.Any();
 
-			if (DoStringsHaveValues(textBoxStrings))
+			if (!textBoxhasNullValue)
 			{
 				if (existingUser == null)
 				{
@@ -66,7 +61,7 @@ namespace WinFormsApp1.Forms
 				}
 				else
 				{
-					existingUser.ProfileName = usernameTextbox.Text;	
+					existingUser.ProfileName = usernameTextbox.Text;
 					existingUser.Email = emailTextBox.Text;
 					existingUser.Password = passwordTextBox.Text;
 				}
@@ -74,6 +69,14 @@ namespace WinFormsApp1.Forms
 			}
 		}
 
+		private void DeleteButton_Click(object sender, EventArgs e)
+		{
+			if (existingUser != null)
+			{
+				UserManager.Instance.DeleteUser(existingUser);
+				Close();
+			}
+		}
 		/* Helpers */
 
 		private void InitailzieTextBoxesForUser(UserProfile user)
@@ -82,5 +85,6 @@ namespace WinFormsApp1.Forms
 			emailTextBox.Text = user.Email;
 			passwordTextBox.Text = user.Password;
 		}
+
 	}
 }

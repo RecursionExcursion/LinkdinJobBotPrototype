@@ -12,10 +12,12 @@ namespace WinFormsApp1.Selenium
 	{
 
 		private readonly UserProfile user;
+		private readonly SearchQuery searchQuery;
 
-		public SeleniumBot(UserProfile user)
+		public SeleniumBot(UserProfile user, SearchQuery searchQuery)
 		{
 			this.user = user;
+			this.searchQuery = searchQuery;
 		}
 
 		public void Run()
@@ -24,7 +26,7 @@ namespace WinFormsApp1.Selenium
 			IWebDriver driver = DriverFactory.GetDriver(url);
 
 			new Login(driver, new LoginByConstants(), user).Run();
-			new SearchForJobs(driver, new SearchForJobsByConstants(), "C# Developer", "").Run();
+			new SearchForJobs(driver, new SearchForJobsByConstants(),searchQuery).Run();
 			new ApplyForJob(driver, new ApplyByConstants(), user, 2).Run();
 		}
 	}

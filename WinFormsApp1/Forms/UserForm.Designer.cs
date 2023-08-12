@@ -36,6 +36,7 @@
 			passwordTextBox = new TextBox();
 			submitButton = new Button();
 			cancelButton = new Button();
+			deleteButton = new Button();
 			SuspendLayout();
 			// 
 			// usernameTextbox
@@ -108,11 +109,24 @@
 			cancelButton.UseVisualStyleBackColor = true;
 			cancelButton.Click += CancelButton_Click;
 			// 
-			// AddUserForm
+			// deleteButton
+			// 
+			deleteButton.Anchor = AnchorStyles.None;
+			deleteButton.AutoSize = true;
+			deleteButton.Location = new Point(12, 12);
+			deleteButton.Name = "deleteButton";
+			deleteButton.Size = new Size(75, 29);
+			deleteButton.TabIndex = 8;
+			deleteButton.Text = "Delete";
+			deleteButton.UseVisualStyleBackColor = true;
+			deleteButton.Click += DeleteButton_Click;
+			// 
+			// UserForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 17F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(784, 461);
+			Controls.Add(deleteButton);
 			Controls.Add(cancelButton);
 			Controls.Add(submitButton);
 			Controls.Add(passwordLabel);
@@ -122,7 +136,7 @@
 			Controls.Add(userNameLabel);
 			Controls.Add(usernameTextbox);
 			Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-			Name = "AddUserForm";
+			Name = "UserForm";
 			Text = "AddUserForm";
 			ResumeLayout(false);
 			PerformLayout();
@@ -138,5 +152,6 @@
 		private TextBox passwordTextBox;
 		private Button submitButton;
 		private Button cancelButton;
+		private Button deleteButton;
 	}
 }

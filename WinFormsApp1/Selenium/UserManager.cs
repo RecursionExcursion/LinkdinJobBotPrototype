@@ -6,7 +6,7 @@ namespace WinFormsApp1.Selenium
 	public class UserManager
 	{
 
-		private readonly List<UserProfile> users;
+		private readonly HashSet<UserProfile> users;
 		private readonly DataManager dataManager;
 
 		private static readonly Lazy<UserManager> lazyUserManager = new Lazy<UserManager>(() => new UserManager());
@@ -16,22 +16,29 @@ namespace WinFormsApp1.Selenium
 		private UserManager()
 		{
 			dataManager = DataManager.Instance;
-			users = dataManager.LoadUsers() ?? new List<UserProfile>();
+			users = dataManager.LoadUsers()?.ToHashSet() ?? new HashSet<UserProfile>();
 		}
 
-		public List<UserProfile> GetUsers() => users;
+		public HashSet<UserProfile> GetUsers() => users;
 
 		public void AddUser(UserProfile user)
 		{
-			if (!users.Contains(user))
-			{
-				users.Add(user);
-				SaveUsers();
-			}
+			ModifySet(set => set.Add(user));
+		}
+
+		public void DeleteUser(UserProfile user)
+		{
+			ModifySet(set => set.Remove(user));
+		}
+
+		private void ModifySet(Action<HashSet<UserProfile>> modification)
+		{
+			modification(users);
+			SaveUsers();
 		}
 
 		public void SyncData() => SaveUsers();
 
-		private void SaveUsers() => dataManager.SaveUsers(users);
+		private void SaveUsers() => dataManager.SaveUsers(users.ToList());
 	}
 }

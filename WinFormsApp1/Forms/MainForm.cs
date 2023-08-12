@@ -32,17 +32,12 @@ namespace WinFormsApp1
 
 			SearchQueryForm queryForm = new SearchQueryForm(GetSelection());
 			queryForm.ShowDialog();
-
-
-			//UserProfile user = new UserProfile("ryan", "rloup7@gmail.com", "walruss7");
-
-			//new SeleniumBot(user).Run();
 		}
 
 
 		private void OnFormLoad(object sender, EventArgs e)
 		{
-
+			userListView.Items[0].Selected = true;
 		}
 
 		private void OnFormResize(object sender, EventArgs e)
@@ -54,15 +49,18 @@ namespace WinFormsApp1
 		{
 			UserForm addUserForm = new UserForm();
 			addUserForm.ShowDialog();
-			UserProfile newUser = addUserForm.NewUser;
+
+			UserProfile? newUser = addUserForm.NewUser;
+
+			if (newUser != null)
+			{
 			userManager.AddUser(newUser);
 			InitializeListView(userListView);
 
-		}
-
-		private void SetSelection(object sender, EventArgs e)
-		{
-			selectedUserProfile = (UserProfile) userListView.SelectedItems[0].Tag;
+			//Clear and select newest entry
+			userListView.SelectedItems.Clear();
+			userListView.Items[userListView.Items.Count - 1].Selected = true;
+			}
 		}
 
 		private UserProfile GetSelection() => (UserProfile) userListView.SelectedItems[0].Tag;
@@ -70,28 +68,39 @@ namespace WinFormsApp1
 		private void EditUserButton_Click(object sender, EventArgs e)
 		{
 			UserForm addUserForm = new UserForm(GetSelection());
+
 			addUserForm.ShowDialog();
+
 			userManager.SyncData();
+
 			InitializeListView(userListView);
 		}
 
-		/* Helpers */
+		private void UserListViewSelectedIndexChanged(object sender, EventArgs e)
+		{
+			startBotButton.Enabled = userListView.SelectedItems.Count > 0;
+		}
 
+		/* Helpers */
 
 		public void InitializeListView(ListView listView)
 		{
 			listView.Clear();
 			listView.MultiSelect = false;
 			listView.FullRowSelect = true;
-			listView.View = View.Details;
+			listView.View = View.Tile;
+
+			listView.TileSize = new Size(listView.Width - 4, 50);
 
 			int w = listView.Width;
-			listView.Columns.Add("Name", w / 2);
-			listView.Columns.Add("Email", w / 2);
+			listView.Columns.Add("Name");
+			listView.Columns.Add("Email");
 
-			List<UserProfile> userProfiles = userManager.GetUsers();
+			List<UserProfile> userProfiles = userManager.GetUsers().ToList();
+
 			userProfiles.ForEach(user => AddListItem(user));
 		}
+
 		private void AddListItem(UserProfile user)
 		{
 			ListViewItem item = new ListViewItem(user.ProfileName);

@@ -53,7 +53,7 @@
 			userListView.Size = new Size(350, 280);
 			userListView.TabIndex = 2;
 			userListView.UseCompatibleStateImageBehavior = false;
-			userListView.SelectedIndexChanged += SetSelection;
+			userListView.SelectedIndexChanged += UserListViewSelectedIndexChanged;
 			// 
 			// addUserButton
 			// 

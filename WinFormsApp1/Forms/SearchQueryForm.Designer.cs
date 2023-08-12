@@ -30,7 +30,7 @@
 		{
 			locationLabel = new Label();
 			locationListBox = new CheckedListBox();
-			positionListBox = new CheckedListBox();
+			experianceListBox = new CheckedListBox();
 			positionLabel = new Label();
 			jobSearchLabel = new Label();
 			jobSearchTextBox = new TextBox();
@@ -59,12 +59,12 @@
 			// 
 			// positionListBox
 			// 
-			positionListBox.FormattingEnabled = true;
-			positionListBox.Items.AddRange(new object[] { "Internship", "Entry Level", "Associate", "Mid-Senior Level", "Director", "Executive" });
-			positionListBox.Location = new Point(402, 96);
-			positionListBox.Name = "positionListBox";
-			positionListBox.Size = new Size(120, 112);
-			positionListBox.TabIndex = 3;
+			experianceListBox.FormattingEnabled = true;
+			experianceListBox.Items.AddRange(new object[] { "Internship", "Entry Level", "Associate", "Mid-Senior Level", "Director", "Executive" });
+			experianceListBox.Location = new Point(402, 96);
+			experianceListBox.Name = "positionListBox";
+			experianceListBox.Size = new Size(120, 112);
+			experianceListBox.TabIndex = 3;
 			// 
 			// positionLabel
 			// 
@@ -127,7 +127,7 @@
 			Controls.Add(jobLocationLabel);
 			Controls.Add(jobSearchTextBox);
 			Controls.Add(jobSearchLabel);
-			Controls.Add(positionListBox);
+			Controls.Add(experianceListBox);
 			Controls.Add(positionLabel);
 			Controls.Add(locationListBox);
 			Controls.Add(locationLabel);
@@ -142,7 +142,7 @@
 
 		private Label locationLabel;
 		private CheckedListBox locationListBox;
-		private CheckedListBox positionListBox;
+		private CheckedListBox experianceListBox;
 		private Label positionLabel;
 		private Label jobSearchLabel;
 		private TextBox jobSearchTextBox;

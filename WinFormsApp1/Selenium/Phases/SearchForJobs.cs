@@ -7,31 +7,15 @@ namespace WinFormsApp1.Selenium.Phases
 {
     public class SearchForJobs : BotPhase<ByKeys>
     {
-        //TODO Testing only
-        private static readonly Dictionary<string, string> locationIDMap = new()
-            {
-                { "OnSite", "workplaceType-1" },
-                { "Remote", "workplaceType-2" },
-                { "Hybrid", "workplaceType-3" }
-            };
-
-        private static readonly Dictionary<string, string> experianceIDMap = new()
-            {
-                { "Internship", "experience-1" },
-                { "Entry Level", "experience-2" },
-                { "Associate", "experience-3" },
-                { "Mid-Senior Level", "experience-4" },
-                { "Director", "experience-5" },
-                { "Executive", "experience-6" }
-            };
-
         private readonly string jobDescription;
-        private readonly string jobLocation;
+        private readonly string? jobLocation;
+        private readonly SearchQuery searchQuery;
 
 		public SearchForJobs(IWebDriver driver, SearchForJobsByConstants constants, params object[] parameters) : base(driver, constants, parameters)
 		{
-			jobDescription = (string) parameters[0];
-			jobLocation = (string) parameters[1];
+			searchQuery = (SearchQuery) parameters[0];
+            jobLocation = searchQuery.LocationSearch;
+            jobDescription = searchQuery.JobSearch;
 		}
 
 		public override void Run()
@@ -93,29 +77,25 @@ namespace WinFormsApp1.Selenium.Phases
 
         private void SetUpExperienceFilters()
         {
-            List<string> ids = new List<string> { experianceIDMap["Internship"], experianceIDMap["Entry Level"] };
-
-            SetSearchParams(by[ExperienceFiltersButton], by[ExperienceFiltersParent], ids);
+            SetSearchParams(by[ExperienceFiltersButton], by[ExperienceFiltersParent], searchQuery.ExperianceChoiceID);
         }
 
 
         private void SetUpLocationFilters()
         {
-            List<string> ids = new List<string> { locationIDMap["Remote"] };
-
-            SetSearchParams(by[LocationFiltersParent], by[LocationFiltersButton], ids);
+            SetSearchParams(by[LocationFiltersParent], by[LocationFiltersButton], searchQuery.LocationChoiceID);
         }
 
 
         private void SetSearchParams(By buttonBy, By parentBy, List<string> idList)
         {
             //Presses main button
-            IWebElement parameterButton = elementLocator.FindElement(buttonBy);
+            IWebElement parameterButton = elementLocator.FindElementAfter(buttonBy,3);
 
             actions.MoveToAndClick(parameterButton).Perform();
 
             //Selects from drop down
-            IWebElement parent = elementLocator.FindElementAfter(parentBy, 2);
+            IWebElement parent = elementLocator.FindElementAfter(parentBy, 3);
 
             List<IWebElement> inputs = elementLocator.FindElements(parent, by[InElementInput]);
 
