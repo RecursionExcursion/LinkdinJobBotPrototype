@@ -16,12 +16,12 @@ namespace WinFormsApp1
 		public MainForm()
 		{
 			InitializeComponent();
-			FormInitalizer.Initalize(this);
-
-
-			InitializeListView(userListView);
 
 			controlResizer = ControlResizer.ResizeAllControls(this);
+
+			FormInitalizer.Initalize(this);
+
+			InitializeListView(userListView);
 		}
 
 
@@ -29,6 +29,11 @@ namespace WinFormsApp1
 
 		private void StartBotButton_Click(object sender, EventArgs e)
 		{
+
+			SearchQueryForm queryForm = new SearchQueryForm(GetSelection());
+			queryForm.ShowDialog();
+
+
 			//UserProfile user = new UserProfile("ryan", "rloup7@gmail.com", "walruss7");
 
 			//new SeleniumBot(user).Run();
@@ -60,9 +65,11 @@ namespace WinFormsApp1
 			selectedUserProfile = (UserProfile) userListView.SelectedItems[0].Tag;
 		}
 
+		private UserProfile GetSelection() => (UserProfile) userListView.SelectedItems[0].Tag;
+
 		private void EditUserButton_Click(object sender, EventArgs e)
 		{
-			UserForm addUserForm = new UserForm(selectedUserProfile);
+			UserForm addUserForm = new UserForm(GetSelection());
 			addUserForm.ShowDialog();
 			userManager.SyncData();
 			InitializeListView(userListView);
