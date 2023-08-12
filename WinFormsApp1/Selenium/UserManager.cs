@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WinFormsApp1.Data;
+﻿using WinFormsApp1.Data;
 using WinFormsApp1.Models;
 
 namespace WinFormsApp1.Selenium
@@ -24,6 +19,8 @@ namespace WinFormsApp1.Selenium
 			users = dataManager.LoadUsers() ?? new List<UserProfile>();
 		}
 
+		public List<UserProfile> GetUsers() => users;
+
 		public void AddUser(UserProfile user)
 		{
 			if (!users.Contains(user))
@@ -33,7 +30,7 @@ namespace WinFormsApp1.Selenium
 			}
 		}
 
-		public void SyncData() =>  SaveUsers();
+		public void SyncData() => SaveUsers();
 
 		private void SaveUsers() => dataManager.SaveUsers(users);
 	}

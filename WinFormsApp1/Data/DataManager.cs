@@ -16,8 +16,19 @@ namespace WinFormsApp1.Data
 
 		private DataManager()
 		{
+			InitializeFolders();
+		}
+
+		private void InitializeFolders()
+		{
 			//Creates Folder structure if it does not exist
 			CreateFilePathIfAbsent();
+			//Creates Json file if it does not already exist
+			if (File.Exists(GetFilePath()) == false)
+			{
+				List<UserProfile> emptyUsers = new List<UserProfile>();
+				SaveUsers(emptyUsers);
+			}
 		}
 
 		public void SaveUsers(List<UserProfile> users)

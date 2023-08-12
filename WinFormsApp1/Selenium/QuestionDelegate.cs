@@ -55,8 +55,8 @@ namespace WinFormsApp1.Selenium
 
 		public void HandleIncorrectInput(string question)
 		{
-			InfoPopUp infoPopUp = new InfoPopUp("Answer does not apply, please try again");
-			infoPopUp.ShowDialog();
+			string message = "Answer does not apply, please try again";
+			MessageBox.Show(message);
 			RemoveQAFromUser(question);
 		}
 	}
