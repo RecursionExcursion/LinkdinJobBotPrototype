@@ -49,7 +49,7 @@ namespace WinFormsApp1.Selenium.Phases
 		private void FindAndClickEasyApplyButton()
 		{
 			//TODO replace try catch with boolean?
-			IWebElement easyApplyButtonElement = elementLocator.FindElement(by[EasyApplyButton]);
+			IWebElement easyApplyButtonElement = elementLocator.FindElementAfterSleep(by[EasyApplyButton], 1.5);
 			actions.MoveToAndClick(easyApplyButtonElement).Perform();
 		}
 
@@ -108,11 +108,11 @@ namespace WinFormsApp1.Selenium.Phases
 
 		}
 
-		private bool IsRadioQuestion(IWebElement div) => elementLocator.ElementExists(div, by[FieldSet]);
+		private bool IsRadioQuestion(IWebElement div) => elementLocator.ElementExists(div, By.TagName("fieldset"));
 
-		private bool IsSelectQuestion(IWebElement div) => elementLocator.ElementExists(div, by[Select]);
+		private bool IsSelectQuestion(IWebElement div) => elementLocator.ElementExists(div, By.TagName("select"));
 
-		private bool IsInputQuestion(IWebElement div) => elementLocator.ElementExists(div, by[Input]);
+		private bool IsInputQuestion(IWebElement div) => elementLocator.ElementExists(div, By.TagName("input"));
 
 		private void AnswerSelectQuestion(IWebElement div)
 		{
@@ -121,13 +121,11 @@ namespace WinFormsApp1.Selenium.Phases
 			IWebElement selectTag = elementLocator.FindElement(div, by[Select]);
 			SelectElement select = new SelectElement(selectTag);
 
-
 			bool questionAnswered = false;
 			while (!questionAnswered)
 			{
 				try
 				{
-					questionDelegate.AddDataIfDoesNotExist(question);
 					select.SelectByValue(questionDelegate.GetAnswer(question));
 					questionAnswered = true;
 				}
@@ -145,14 +143,14 @@ namespace WinFormsApp1.Selenium.Phases
 			List<IWebElement> inputTags = elementLocator.FindElements(div, By.XPath(".//input"));
 			IWebElement span = elementLocator.FindElement(div, By.XPath(".//span[@aria-hidden=\"true\"]"));
 
-			String question = span.Text;
+			string question = span.Text;
 
 			bool questionAnswered = false;
 			while (!questionAnswered)
 			{
 				try
 				{
-					questionDelegate.AddDataIfDoesNotExist(question);
+					string ans = questionDelegate.GetAnswer(question);
 					foreach (IWebElement input in inputTags)
 					{
 						string val = input.GetAttribute("value");
@@ -175,14 +173,15 @@ namespace WinFormsApp1.Selenium.Phases
 		{
 			string question = GetQuestion(div);
 
-			questionDelegate.AddDataIfDoesNotExist(question);
+			//TODO
+			//questionDelegate.AddDataIfDoesNotExist(question);
 
 			IWebElement inputTag = elementLocator.FindElement(div, by[Input]);
 
 			string value = inputTag.GetAttribute("value");
 			string answer = questionDelegate.GetAnswer(question);
 
-			if (String.IsNullOrEmpty(value))
+			if (string.IsNullOrEmpty(value))
 			{
 				actions.MoveToAndClick(inputTag)
 							  .SendKeys(answer)
@@ -210,11 +209,11 @@ namespace WinFormsApp1.Selenium.Phases
 
 			string question = "Resume";
 
-			questionDelegate.AddDataIfDoesNotExist(question);
+			//questionDelegate.AddDataIfDoesNotExist(question);
 
 			string resumeName = questionDelegate.GetAnswer(question);
 
-			IWebElement resumeH3 = null;
+			IWebElement? resumeH3 = null;
 
 			foreach (IWebElement h3Tag in h3Tags)
 			{
@@ -250,7 +249,6 @@ namespace WinFormsApp1.Selenium.Phases
 			By nextXpath = by[ContinueNext];
 			By reviewXpath = by[ContinueReview];
 			By submitXpath = by[ContinueSubmit];
-
 
 			IWebElement?[] buttons = new List<By> { nextXpath, reviewXpath, submitXpath }
 									.Select(by => getButtonOrNull(by))
@@ -291,4 +289,3 @@ namespace WinFormsApp1.Selenium.Phases
 		}
 	}
 }
-

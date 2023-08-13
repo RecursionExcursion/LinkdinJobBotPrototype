@@ -14,13 +14,13 @@ namespace WinFormsApp1.Selenium.Constants
 			JobsButton,
 			EasyApplyButton,
 
-			ExperienceFiltersParent,
-			ExperienceFiltersButton,
+			InElementInput,
 
-			LocationFiltersParent,
-			LocationFiltersButton,
+			AllFiltersButton,
 
-			InElementInput
+
+			ExperianceSearchFilterButton,
+			WorkplaceTypeSearchFilterButton,
 		}
 
 		protected override Dictionary<ByKeys, By> ByDict()
@@ -33,13 +33,12 @@ namespace WinFormsApp1.Selenium.Constants
 				{ JobsButton, By.XPath("//a[@href='https://www.linkedin.com/jobs/?']")},
 				{ EasyApplyButton, By.XPath("//button[@aria-label=\"Easy Apply filter.\"]")},
 
-				{ ExperienceFiltersParent, By.XPath("//div[@id=\"hoverable-outlet-experience-level-filter-value\"]")},
-				{ ExperienceFiltersButton, By.XPath("//button[contains(@aria-label,\"Experience level filter.\")]")},
+				{ InElementInput,By.XPath(".//input")},
 
-				{ LocationFiltersParent, By.XPath("//div[@id=\"hoverable-outlet-on-site/remote-filter-value\"]")},
-				{ LocationFiltersButton, By.XPath("//button[contains(@aria-label,\"On-site/remote filter.\")]")},
+				{ AllFiltersButton, By.XPath("//button[contains(@aria-label, \"Show all filters\")]")},
 
-				{ InElementInput,By.XPath(".//input")}
+				{ExperianceSearchFilterButton,By.Id("searchFilter_experience") },
+				{WorkplaceTypeSearchFilterButton, By.Id("searchFilter_workplaceType") }
 
 			};
 		}

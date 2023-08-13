@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WinFormsApp1.Selenium
+﻿namespace WinFormsApp1.Selenium
 {
 	public class SearchQuery
 	{
@@ -12,6 +6,7 @@ namespace WinFormsApp1.Selenium
 		public string? LocationSearch { get; set; }
 		public List<string> LocationChoiceID { get; set; }
 		public List<string> ExperianceChoiceID { get; set; }
+
 
 		public static readonly Dictionary<string, string> locationIDMap = new()
 			{

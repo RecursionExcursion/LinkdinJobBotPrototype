@@ -14,11 +14,17 @@ namespace WinFormsApp1.Selenium.Phases
 			int attemptLimit = 3;
 			do
 			{
-				driver = GetRandomWebDriver();
-				driver.Navigate().GoToUrl(url);
+				driver = InitializeDriverToUrl(url);
 			} while (!CheckIfPageLoadSuccessFull(driver) && --attemptLimit > 0);
 
 
+			return driver;
+		}
+
+		private static IWebDriver InitializeDriverToUrl(string url)
+		{
+			IWebDriver driver = GetRandomWebDriver();
+			driver.Navigate().GoToUrl(url);
 			return driver;
 		}
 

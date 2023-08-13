@@ -37,7 +37,10 @@ namespace WinFormsApp1
 
 		private void OnFormLoad(object sender, EventArgs e)
 		{
-			userListView.Items[0].Selected = true;
+			if (userListView.Items.Count > 0)
+			{
+				userListView.Items[0].Selected = true;
+			}
 		}
 
 		private void OnFormResize(object sender, EventArgs e)
@@ -54,12 +57,12 @@ namespace WinFormsApp1
 
 			if (newUser != null)
 			{
-			userManager.AddUser(newUser);
-			InitializeListView(userListView);
+				userManager.AddUser(newUser);
+				InitializeListView(userListView);
 
-			//Clear and select newest entry
-			userListView.SelectedItems.Clear();
-			userListView.Items[userListView.Items.Count - 1].Selected = true;
+				//Clear and select newest entry
+				userListView.SelectedItems.Clear();
+				userListView.Items[userListView.Items.Count - 1].Selected = true;
 			}
 		}
 

@@ -5,37 +5,32 @@ namespace WinFormsApp1.Selenium
 {
 	public class QuestionDelegate
 	{
-
 		private readonly UserProfile user;
-		private readonly Dictionary<string, string> questionAsnwerDictionary;
 		private readonly UserManager userManager = UserManager.Instance;
 
 		public QuestionDelegate(UserProfile user)
 		{
 			this.user = user;
-			questionAsnwerDictionary = user.Q_A.ToDictionary(qa => qa.Question, qa => qa.Answer);
 		}
 
-		public string GetAnswer(string question) => questionAsnwerDictionary[question];
-
-		public void AddDataIfDoesNotExist(string question)
+		public string GetAnswer(string question)
 		{
-			while (questionAsnwerDictionary[question] == null)
+			string ans;
+			try
+			{
+				ans = user.Q_A[question];
+			}
+			catch (Exception)
 			{
 				AddDataFromPopUp(question);
+				ans = user.Q_A[question];
 			}
+			return ans;
 		}
 
 		public void RemoveQAFromUser(string question)
 		{
-			foreach (var qa in user.Q_A)
-			{
-				if (string.Equals(qa.Question, question, StringComparison.OrdinalIgnoreCase))
-				{
-					user.Q_A.Remove(qa);
-					break;
-				}
-			}
+			user.Q_A.Remove(question);
 			userManager.SyncData();
 		}
 
@@ -44,12 +39,7 @@ namespace WinFormsApp1.Selenium
 			QuestionInput input = new QuestionInput(question);
 			input.ShowDialog();
 
-			QA qa = new QA() {
-				Question = question,
-				Answer = input.GetSubmittedAnswer()
-			};
-
-			user.Q_A.Add(qa);
+			user.Q_A.Add(question, input.GetSubmittedAnswer());
 			userManager.SyncData();
 		}
 

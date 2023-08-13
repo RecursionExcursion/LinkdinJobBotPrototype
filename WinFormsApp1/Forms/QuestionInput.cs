@@ -13,7 +13,7 @@
 		private void SubmitButton_Click(object sender, EventArgs e)
 		{
 			 answer = answerTextBox.Text;
-
+			this.Close();
 		}
 
 		public string GetSubmittedAnswer()

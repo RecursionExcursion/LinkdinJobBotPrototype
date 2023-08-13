@@ -21,6 +21,12 @@ namespace WinFormsApp1.Selenium.Phases
 
 		public override void Run()
 		{
+			InputLoginCreds();
+			CheckForSecurityCheck();
+		}
+
+		private void InputLoginCreds()
+		{
 			//TODO Sometimes fails to write in the email text box, create fall back
 			IWebElement usernameTextBox = elementLocator.FindElement(by[SessionKey]);
 			IWebElement passwordTextBox = elementLocator.FindElement(by[SessionPassword]);
@@ -32,8 +38,6 @@ namespace WinFormsApp1.Selenium.Phases
 				   .SendKeys(password)
 				   .MoveToAndClick(submitButton)
 				   .Perform();
-
-			CheckForSecurityCheck();
 		}
 
 		private void CheckForSecurityCheck()
