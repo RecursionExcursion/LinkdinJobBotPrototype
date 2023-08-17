@@ -33,7 +33,7 @@
 		}
 
 		//Place in Form resize event handler
-		public void ResizeAllControls()
+		public void ResizeControlsOnFormResize()
 		{
 			foreach (KeyValuePair<Control, Rectangle> pair in originalControlSizeMap)
 			{

@@ -31,11 +31,12 @@
 			submitButton = new Button();
 			questionLabel = new Label();
 			answerTextBox = new TextBox();
+			answerCheckList = new CheckedListBox();
 			SuspendLayout();
 			// 
 			// submitButton
 			// 
-			submitButton.Location = new Point(164, 103);
+			submitButton.Location = new Point(159, 174);
 			submitButton.Name = "submitButton";
 			submitButton.Size = new Size(75, 23);
 			submitButton.TabIndex = 0;
@@ -46,7 +47,7 @@
 			// questionLabel
 			// 
 			questionLabel.AutoSize = true;
-			questionLabel.Location = new Point(182, 56);
+			questionLabel.Location = new Point(181, 45);
 			questionLabel.Name = "questionLabel";
 			questionLabel.Size = new Size(38, 15);
 			questionLabel.TabIndex = 1;
@@ -59,16 +60,26 @@
 			answerTextBox.Size = new Size(100, 23);
 			answerTextBox.TabIndex = 2;
 			// 
+			// answerCheckList
+			// 
+			answerCheckList.FormattingEnabled = true;
+			answerCheckList.Location = new Point(141, 63);
+			answerCheckList.Name = "answerCheckList";
+			answerCheckList.Size = new Size(120, 94);
+			answerCheckList.TabIndex = 3;
+			// 
 			// QuestionInput
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(405, 229);
+			Controls.Add(answerCheckList);
 			Controls.Add(answerTextBox);
 			Controls.Add(questionLabel);
 			Controls.Add(submitButton);
 			Name = "QuestionInput";
 			Text = "Form1";
+			Resize += OnFormResize;
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -78,5 +89,6 @@
 		private Button submitButton;
 		private Label questionLabel;
 		private TextBox answerTextBox;
+		private CheckedListBox answerCheckList;
 	}
 }

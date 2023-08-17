@@ -5,21 +5,15 @@ using WinFormsApp1.Selenium;
 
 namespace WinFormsApp1
 {
-	public partial class MainForm : Form
+	public partial class MainForm : FormBase
 	{
 
-		private ControlResizer controlResizer;
 		private readonly UserManager userManager = UserManager.Instance;
-
-		private UserProfile? selectedUserProfile;
 
 		public MainForm()
 		{
 			InitializeComponent();
-
-			controlResizer = ControlResizer.ResizeAllControls(this);
-
-			FormInitalizer.Initalize(this);
+			InitializeControlResizer();	
 
 			InitializeListView(userListView);
 		}
@@ -45,7 +39,7 @@ namespace WinFormsApp1
 
 		private void OnFormResize(object sender, EventArgs e)
 		{
-			controlResizer.ResizeAllControls();
+			controlResizer.ResizeControlsOnFormResize();
 		}
 
 		private void AddUserButton_Click(object sender, EventArgs e)

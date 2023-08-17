@@ -37,7 +37,7 @@ namespace WinFormsApp1.Selenium.Phases
 
 			List<Func<IWebDriver>> drivers = new List<Func<IWebDriver>>()
 			{
-				createChromeDriver, createFirefoxDriver, createEdgeDriver
+				createChromeDriver, createFirefoxDriver
 			};
 
 			var rand = new Random().Next(drivers.Count);

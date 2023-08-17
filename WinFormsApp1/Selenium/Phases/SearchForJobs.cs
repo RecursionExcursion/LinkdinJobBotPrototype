@@ -1,21 +1,17 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
-using System.Diagnostics;
-using WinFormsApp1.Selenium.Constants;
-using static WinFormsApp1.Selenium.Constants.SearchForJobsByConstants;
-using static WinFormsApp1.Selenium.Constants.SearchForJobsByConstants.ByKeys;
+using WinFormsApp1.Selenium.Utility;
 
 namespace WinFormsApp1.Selenium.Phases
 {
-	public class SearchForJobs : BotPhase<ByKeys>
+	public class SearchForJobs : BotPhase
 	{
 		private readonly string jobDescription;
 		private readonly string? jobLocation;
 		private readonly SearchQuery searchQuery;
 
-		public SearchForJobs(IWebDriver driver, SearchForJobsByConstants constants, params object[] parameters) : base(driver, constants, parameters)
+		public SearchForJobs(CustomDriver driver, SearchQuery searchQuery) : base(driver)
 		{
-			searchQuery = (SearchQuery) parameters[0];
+			this.searchQuery = searchQuery;
 			jobLocation = searchQuery.LocationSearch;
 			jobDescription = searchQuery.JobSearch;
 		}
@@ -43,7 +39,8 @@ namespace WinFormsApp1.Selenium.Phases
 		{
 			if (!string.IsNullOrEmpty(jobDescription))
 			{
-				IWebElement webElement = elementLocator.FindElement(by[TitleBar]);
+				//Title bar
+				IWebElement webElement = elementLocator.FindElement(By.XPath("//input[starts-with(@id,'jobs-search-box-keyword-id-ember')]"));
 				SendKeysToSearchBar(webElement, jobDescription);
 			};
 		}
@@ -55,7 +52,8 @@ namespace WinFormsApp1.Selenium.Phases
 				jobLocation = "";
 			}
 
-			IWebElement webElement = elementLocator.FindElement(by[LocationBar]);
+			//Location bar
+			IWebElement webElement = elementLocator.FindElement(By.XPath("//input[starts-with(@id,'jobs-search-box-location-id-ember')]"));
 			SendKeysToSearchBar(webElement, jobLocation);
 		}
 
@@ -66,7 +64,8 @@ namespace WinFormsApp1.Selenium.Phases
 				   .Perform();
 		}
 
-		private void ClickJobsButton() => ClickButton(by[JobsButton]);
+		//Jobs Button
+		private void ClickJobsButton() => ClickButton(By.XPath("//a[@href='https://www.linkedin.com/jobs/?']"));
 
 		private void ClickButton(By by) => actions.MoveToAndClick(elementLocator.FindElement(by)).Perform();
 
@@ -81,18 +80,20 @@ namespace WinFormsApp1.Selenium.Phases
 			{
 				SetUpLocationFilters();
 			}
-
-			ClickButton(by[EasyApplyButton]);
+			//Easy Apply Button
+			ClickButton(By.XPath("//button[@aria-label=\"Easy Apply filter.\"]"));
 		}
 
 		private void SetUpExperienceFilters()
 		{
-			SetSearchParams(by[ExperianceSearchFilterButton], searchQuery.ExperianceChoiceID);
+			//Experiance Filter button
+			SetSearchParams(By.Id("searchFilter_experience"), searchQuery.ExperianceChoiceID);
 		}
 
 		private void SetUpLocationFilters()
 		{
-			SetSearchParams(by[WorkplaceTypeSearchFilterButton], searchQuery.LocationChoiceID);
+			//Workplace type filter button
+			SetSearchParams(By.Id("searchFilter_workplaceType"), searchQuery.LocationChoiceID);
 		}
 
 		private void SetSearchParams(By buttonId, List<string> idList)
@@ -125,14 +126,14 @@ namespace WinFormsApp1.Selenium.Phases
 
 		private Size MaximizeWindow()
 		{
-			Size originalSize = driver.Manage().Window.Size;
-			driver.Manage().Window.Maximize();
+			Size originalSize = driver.Driver.Manage().Window.Size;
+			driver.Driver.Manage().Window.Maximize();
 			return originalSize;
 		}
 
 		private void ResetWindowSize(Size originalSize)
 		{
-			driver.Manage().Window.Size = originalSize;
+			driver.Driver.Manage().Window.Size = originalSize;
 		}
 	}
 }

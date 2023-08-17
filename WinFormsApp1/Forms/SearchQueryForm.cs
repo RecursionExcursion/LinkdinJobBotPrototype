@@ -1,13 +1,4 @@
-﻿using OpenQA.Selenium.DevTools.V113.Profiler;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data;
 using WinFormsApp1.Forms.Utility;
 using WinFormsApp1.Models;
 using WinFormsApp1.Selenium;
@@ -15,19 +6,15 @@ using static System.Windows.Forms.CheckedListBox;
 
 namespace WinFormsApp1.Forms
 {
-	public partial class SearchQueryForm : Form
+	public partial class SearchQueryForm : FormBase
 	{
 
 		private UserProfile user;
-		private ControlResizer controlResizer;
 
 		public SearchQueryForm(UserProfile user)
 		{
 			InitializeComponent();
-
-			controlResizer = ControlResizer.ResizeAllControls(this);
-
-			FormInitalizer.Initalize(this);
+			InitializeControlResizer();
 
 			this.user = user;
 
@@ -36,15 +23,9 @@ namespace WinFormsApp1.Forms
 
 		/* Event Handlers */
 
-		private void OnLoad(object sender, EventArgs e)
-		{
-
-		}
-
 		private void OnFormResize(object sender, EventArgs e)
 		{
-			controlResizer.ResizeAllControls();
-
+			controlResizer.ResizeControlsOnFormResize();
 		}
 
 		private void StartBotButton_Click(object sender, EventArgs e)

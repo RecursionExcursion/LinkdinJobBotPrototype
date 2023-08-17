@@ -1,15 +1,13 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using System.Diagnostics;
-using WinFormsApp1.Data;
 using WinFormsApp1.Models;
-using WinFormsApp1.Selenium.Constants;
 using WinFormsApp1.Selenium.Phases;
+using WinFormsApp1.Selenium.Utility;
 
 namespace WinFormsApp1.Selenium
 {
 	public class SeleniumBot
 	{
+		private readonly string url = "https://www.linkedin.com";
 
 		private readonly UserProfile user;
 		private readonly SearchQuery searchQuery;
@@ -22,12 +20,13 @@ namespace WinFormsApp1.Selenium
 
 		public void Run()
 		{
-			string url = "https://www.linkedin.com";
 			IWebDriver driver = DriverFactory.GetDriver(url);
 
-			new Login(driver, new LoginByConstants(), user).Run();
-			new SearchForJobs(driver, new SearchForJobsByConstants(),searchQuery).Run();
-			new ApplyForJob(driver, new ApplyByConstants(), user, 2).Run();
+			CustomDriver mainDriver = new CustomDriver(driver, user);
+
+			new Login(mainDriver).Run();
+			new SearchForJobs(mainDriver, searchQuery).Run();
+			new ApplyForJob(mainDriver, 2).Run();
 		}
 	}
 }

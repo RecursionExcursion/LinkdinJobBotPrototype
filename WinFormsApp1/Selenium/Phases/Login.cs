@@ -1,22 +1,19 @@
 ﻿using OpenQA.Selenium;
 using WinFormsApp1.Forms;
-using WinFormsApp1.Selenium.Constants;
-using static WinFormsApp1.Selenium.Constants.LoginByConstants.ByKeys;
-using static WinFormsApp1.Selenium.Constants.LoginByConstants;
 using WinFormsApp1.Models;
+using WinFormsApp1.Selenium.Utility;
 
 namespace WinFormsApp1.Selenium.Phases
 {
-	public class Login : BotPhase<ByKeys>
+	public class Login : BotPhase
 	{
 		private readonly string username;
 		private readonly string password;
 
-		public Login(IWebDriver driver, LoginByConstants constants, params object[] parameters) : base(driver, constants, parameters)
+		public Login(CustomDriver driver) : base(driver)
 		{
-			UserProfile user = (UserProfile) parameters[0];
-			username = user.Email;
-			password = user.Password;
+			username = driver.User.Email;
+			password = driver.User.Password;
 		}
 
 		public override void Run()
@@ -28,9 +25,11 @@ namespace WinFormsApp1.Selenium.Phases
 		private void InputLoginCreds()
 		{
 			//TODO Sometimes fails to write in the email text box, create fall back
-			IWebElement usernameTextBox = elementLocator.FindElement(by[SessionKey]);
-			IWebElement passwordTextBox = elementLocator.FindElement(by[SessionPassword]);
-			IWebElement submitButton = elementLocator.FindElement(by[SubmitButton]);
+			IWebElement usernameTextBox = elementLocator.FindElement(By.Id("session_key"));
+			IWebElement passwordTextBox = elementLocator.FindElement(By.Id("session_password"));
+			IWebElement submitButton = elementLocator.FindElement(
+				By.XPath("//button[@data-tracking-control-name='homepage-basic_sign-in-submit-btn']")
+				);
 
 			actions.MoveToAndClick(usernameTextBox)
 				   .SendKeys(username)
@@ -42,7 +41,7 @@ namespace WinFormsApp1.Selenium.Phases
 
 		private void CheckForSecurityCheck()
 		{
-			List<IWebElement> elements = elementLocator.FindElements(by[SecurityCheckElements]);
+			List<IWebElement> elements = elementLocator.FindElements(By.XPath("//h1"));
 			if (elements.Count != 0)
 			{
 				string text = elements[0].Text;

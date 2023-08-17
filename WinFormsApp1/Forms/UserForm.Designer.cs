@@ -138,6 +138,7 @@
 			Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
 			Name = "UserForm";
 			Text = "AddUserForm";
+			Resize += OnFormResize;
 			ResumeLayout(false);
 			PerformLayout();
 		}

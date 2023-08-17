@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data;
 using WinFormsApp1.Forms.Utility;
 using WinFormsApp1.Models;
 using WinFormsApp1.Selenium;
 
 namespace WinFormsApp1.Forms
 {
-	public partial class UserForm : Form
+	public partial class UserForm : FormBase
 	{
 
 		public UserProfile? NewUser { get; private set; }
@@ -23,15 +15,16 @@ namespace WinFormsApp1.Forms
 		public UserForm()
 		{
 			InitializeComponent();
-			FormInitalizer.Initalize(this);
-			deleteButton.Visible = false;
-			deleteButton.Enabled = false;
+			InitializeControlResizer();
+
+			FormUtility.DisableControl(deleteButton);
 		}
 
 		public UserForm(UserProfile user)
 		{
 			InitializeComponent();
-			FormInitalizer.Initalize(this);
+			InitializeControlResizer();
+
 			existingUser = user;
 			InitailzieTextBoxesForUser(existingUser);
 		}
@@ -86,5 +79,9 @@ namespace WinFormsApp1.Forms
 			passwordTextBox.Text = user.Password;
 		}
 
+		private void OnFormResize(object sender, EventArgs e)
+		{
+			controlResizer.ResizeControlsOnFormResize();
+		}
 	}
 }
